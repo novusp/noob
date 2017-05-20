@@ -1,0 +1,63 @@
+<!doctype html>
+<html ng-app="todoApp">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.1/underscore-min.js"></script>
+ 
+    <script src="files/main.js"></script>
+    <link rel="stylesheet" href="files/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="files/style.css">
+	
+	<link rel="icon" href="favicon.ico" type="image/x-icon"/>
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+	<title>Noob Todos</title>
+  </head>
+  <body>
+    <h2 style="margin-left:30px;">Noob Todos</h2>
+    <div ng-controller="TodoListController as todoList" style="margin-left:30px;">
+        <input type="text" ng-model="todoList.todoText" ng-keydown="$event.keyCode === 13 && todoList.addTodo()" size="30" placeholder="add new todo">
+        <button class="btn btn-sm" ng-click="todoList.addTodo()"><i class="glyphicon-plus"></i> Add</button>
+		<label class="checkbox" style="margin-left: 20px; display: inline;top: 4px;">
+			<input type="checkbox" ng-model="todoList.hideCompleted" style="width: 17px; height: 17px;" />
+			<span>Hide completed</span>
+		</label>
+      
+      <ul ng-init="todoList.initValues()" class="unstyled">
+        <li ng-repeat="cat in todoList.todos" ng-init="todoList.isCatDone(cat.text)" ng-hide="todoList.hideCompleted && cat.done" >
+            <label class="checkbox">
+				<input type="checkbox" ng-model="cat.done" ng-hide="cat.todos.length" ng-change="todoList.updateDBTodo(cat)" >
+				<span class="done-{{cat.done}}" ng-hide="cat.showedit">{{cat.text}}</span>
+				<button class="btn btn-xs" ng-click="todoList.showEdit(cat)" ng-hide="cat.showedit || cat.showadd" value="cat.text"><i class="glyphicon glyphicon-pencil"></i> </button>
+				<button class="btn btn-xs" ng-click="todoList.showInput(cat)" ng-hide="cat.showedit || cat.showadd"><i class="glyphicon-plus"></i> </button>
+				<div style="display:inline;" ng-show="cat.showadd">
+					<input type="text" ng-model="cat.newtodo" ng-keydown="$event.keyCode === 13 && todoList.addTodoToCat(cat)" /><button class="btn btn-xs" ng-click="todoList.addTodoToCat(cat)">Ok</button>
+				</div>
+				<div style="display:inline;" ng-show="cat.showedit">
+					<input type="text" ng-keydown="$event.keyCode === 13 && todoList.EditCat(cat)"  ng-model="cat.text" /><button class="btn btn-xs" ng-click="todoList.EditCat(cat)">Save</button>
+				</div>
+				<span ng-show="cat.todos.length" style="font-weight:normal;"> {{todoList.remaining(cat.text)}} of {{cat.todos.length}} remaining</span>
+			</label>
+			<ul class="unstyled">
+				<li ng-repeat="todo in cat.todos" ng-hide="todoList.hideCompleted && todo.done && (cat.todos.length || cat.newtodo)">
+				<label class="checkbox">
+					<input type="checkbox" ng-model="todo.done" ng-click="todoList.isCatDone(cat.text)" ng-change="todoList.updateDBTodo(todo)">
+					<span class="done-{{todo.done}}"  ng-hide="todo.showedit">{{todo.text}}</span>
+					<button class="btn btn-xs" ng-click="todoList.showEdit(todo)" ng-hide="todo.showedit" value="todo.text" style="display:inline;" ><i class="glyphicon glyphicon-pencil"></i> </button>
+					<div style="display:inline;" ng-show="todo.showedit">
+						<input type="text" ng-keydown="$event.keyCode === 13 && todoList.EditCat(todo)"  ng-model="todo.text" /><button class="btn btn-xs" ng-click="todoList.EditCat(todo)">Save</button>
+					</div>
+				</label>				
+				</li>
+				<li ng-show="cat.newtodo">
+					<label class="checkbox">
+						<input type="checkbox" ng-model="todo.done" ng-click="todoList.isCatDone(cat.text)">
+						<span class="done-{{todo.done}}">{{cat.newtodo}}</span>
+					</label>
+				</li>
+			</ul>
+        </li>
+      </ul>
+      
+    </div>
+  </body>
+</html>
