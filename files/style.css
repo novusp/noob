@@ -5,3 +5,49 @@ ul{
   text-decoration: line-through;
   color: grey;
 }
+.filters{
+	border-left: 1px dashed #ccc;
+    width: auto;
+    float: left;
+    margin-left: 30px;
+    height: 400px;
+    padding-left: 30px;
+}
+.tagslist{
+	float: right;
+    border: 1px dashed #0000ff;
+    padding: 2px;
+    font-weight: normal;
+    color: orangered;
+}
+#tagsholder{
+	float: left;
+    padding: 0;
+    width: auto;
+}
+#tagsholder li{
+	width: 100%;
+    clear: both;
+}
+#tagsholder li a{
+	float: left;
+    padding: 2px 10px;
+    text-decoration: none;
+    font-size: 16px;
+    color: #666;
+}
+#tagsholder li.active-true a{
+	color: #0027ff;
+	font-weight: bold;
+}
+#tagsholder li a:hover{
+	color: orangered;
+}
+#tagsholder li div{
+	float:right;
+	padding: 2px 10px;
+}
+
+#popup{background-color: #fff; z-index: 14; position: fixed; margin: 0 auto; width: 260px; margin-left: 400px;}
+#popup div{text-align: center;}
+#cover{ position:fixed; top:0; left:0; background:rgba(0,0,0,0.6); z-index:5; width:100%; height:100%;}

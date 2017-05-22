@@ -3,18 +3,22 @@
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.1/underscore-min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
  
+	<script src="files/bootstrap/js/bootstrap.min.js"></script>
+    <script src="files/bootstrap/js/bootstrap-multiselect.js"></script>
     <script src="files/main.js"></script>
     <link rel="stylesheet" href="files/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" href="files/bootstrap/css/bootstrap-multiselect.css"></script>
     <link rel="stylesheet" href="files/style.css">
 	
 	<link rel="icon" href="favicon.ico" type="image/x-icon"/>
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 	<title>Noob Todos</title>
   </head>
-  <body>
+  <body ng-controller="TodoListController as todoList">
     <h2 style="margin-left:30px;">Noob Todos</h2>
-    <div ng-controller="TodoListController as todoList" style="margin-left:30px;">
+    <div style="margin-left:30px;float:left;">
         <input type="text" ng-model="todoList.todoText" ng-keydown="$event.keyCode === 13 && todoList.addTodo()" size="30" placeholder="add new todo">
         <button class="btn btn-sm" ng-click="todoList.addTodo()"><i class="glyphicon-plus"></i> Add</button>
 		<label class="checkbox" style="margin-left: 20px; display: inline;top: 4px;">
@@ -22,30 +26,48 @@
 			<span>Hide completed</span>
 		</label>
       
-      <ul ng-init="todoList.initValues()" class="unstyled">
+      <ul ng-init="todoList.initValues(['tag','todoitem'])" class="unstyled">
         <li ng-repeat="cat in todoList.todos" ng-init="todoList.isCatDone(cat.text)" ng-hide="todoList.hideCompleted && cat.done" >
             <label class="checkbox">
-				<input type="checkbox" ng-model="cat.done" ng-hide="cat.todos.length" ng-change="todoList.updateDBTodo(cat)" >
+				<input type="checkbox" ng-model="cat.done" ng-hide="cat.todos.length" ng-change="todoList.addToDB(cat)" >
 				<span class="done-{{cat.done}}" ng-hide="cat.showedit">{{cat.text}}</span>
-				<button class="btn btn-xs" ng-click="todoList.showEdit(cat)" ng-hide="cat.showedit || cat.showadd" value="cat.text"><i class="glyphicon glyphicon-pencil"></i> </button>
-				<button class="btn btn-xs" ng-click="todoList.showInput(cat)" ng-hide="cat.showedit || cat.showadd"><i class="glyphicon-plus"></i> </button>
+				<button class="btn btn-xs" ng-click="todoList.showInput(cat,'showtags')" ng-hide="cat.todos.length || cat.showadd || cat.showedit || cat.showtags" ><i class="glyphicon glyphicon-tag"></i> </button>
+				<button class="btn btn-xs" ng-click="todoList.showInput(cat,'showedit')" ng-hide="cat.showedit || cat.showadd || cat.showtags" ><i class="glyphicon glyphicon-pencil"></i> </button>
+				<button class="btn btn-xs" ng-click="todoList.showInput(cat,'showadd')" ng-hide="cat.showedit || cat.showadd || cat.showtags"><i class="glyphicon-plus"></i> </button>
 				<div style="display:inline;" ng-show="cat.showadd">
 					<input type="text" ng-model="cat.newtodo" ng-keydown="$event.keyCode === 13 && todoList.addTodoToCat(cat)" /><button class="btn btn-xs" ng-click="todoList.addTodoToCat(cat)">Ok</button>
 				</div>
 				<div style="display:inline;" ng-show="cat.showedit">
 					<input type="text" ng-keydown="$event.keyCode === 13 && todoList.EditCat(cat)"  ng-model="cat.text" /><button class="btn btn-xs" ng-click="todoList.EditCat(cat)">Save</button>
 				</div>
+				<div style="display:inline;" ng-show="cat.showtags">
+					<select class="multiselect" multiple="multiple">
+						<option ng-repeat="tag in cat.allTags" value="{{tag._id + '|' + cat._id}}" ng-selected="tag.selected" >{{tag.text}}</option>
+					</select>
+				</div>				
+				<small class="tagslist" ng-show="!cat.todos.length && cat.selTags.length">
+					<span ng-repeat="tag in cat.allTags" ng-show="tag.selected" >{{tag.text}} | </span>
+				</small>
 				<span ng-show="cat.todos.length" style="font-weight:normal;"> {{todoList.remaining(cat.text)}} of {{cat.todos.length}} remaining</span>
 			</label>
 			<ul class="unstyled">
 				<li ng-repeat="todo in cat.todos" ng-hide="todoList.hideCompleted && todo.done && (cat.todos.length || cat.newtodo)">
 				<label class="checkbox">
-					<input type="checkbox" ng-model="todo.done" ng-click="todoList.isCatDone(cat.text)" ng-change="todoList.updateDBTodo(todo)">
-					<span class="done-{{todo.done}}"  ng-hide="todo.showedit">{{todo.text}}</span>
-					<button class="btn btn-xs" ng-click="todoList.showEdit(todo)" ng-hide="todo.showedit" value="todo.text" style="display:inline;" ><i class="glyphicon glyphicon-pencil"></i> </button>
+					<input type="checkbox" ng-model="todo.done" ng-click="todoList.isCatDone(cat.text)" ng-change="todoList.addToDB(todo)">
+					<span class="done-{{todo.done}}" ng-hide="todo.showedit">{{todo.text}}</span>
+					<button class="btn btn-xs" ng-click="todoList.showInput(todo,'showtags')" ng-hide="todo.showedit || todo.showtags" ><i class="glyphicon glyphicon-tag"></i> </button>
+					<button class="btn btn-xs" ng-click="todoList.showInput(todo,'showedit')" ng-hide="todo.showedit || todo.showtags" style="display:inline;" ><i class="glyphicon glyphicon-pencil"></i> </button>
 					<div style="display:inline;" ng-show="todo.showedit">
 						<input type="text" ng-keydown="$event.keyCode === 13 && todoList.EditCat(todo)"  ng-model="todo.text" /><button class="btn btn-xs" ng-click="todoList.EditCat(todo)">Save</button>
 					</div>
+					<div style="display:inline;" ng-show="todo.showtags">
+						<select class="multiselect" multiple="multiple">
+							<option ng-repeat="tag in todo.allTags" value="{{tag._id + '|' + todo._id}}" ng-selected="tag.selected" >{{tag.text}}</option>
+						</select>
+					</div>
+					<small class="tagslist" ng-show="todo.selTags.length">
+						<span ng-repeat="tag in todo.allTags" ng-show="tag.selected" >{{tag.text}} | </span>
+					</small>
 				</label>				
 				</li>
 				<li ng-show="cat.newtodo">
@@ -57,7 +79,37 @@
 			</ul>
         </li>
       </ul>
-      
     </div>
+	<div class="filters">
+		<h4 style="">Tags
+			<button class="btn btn-xs" ng-click="todoList.showInput(todoList.tags,'showedit')" ng-hide="todoList.tags.showedit"><i class="glyphicon-plus"></i> </button>
+			<div style="display:inline;" ng-show="todoList.tags.showedit">
+				<input type="text" ng-model="todoList.tags.newtag" ng-keydown="$event.keyCode === 13 && todoList.addTag()" /><button class="btn btn-xs" ng-click="todoList.addTag()">Ok</button>
+			</div>
+		</h4>
+
+		<ul class="unstyled" id="tagsholder">
+			<li class="active-{{todoList.activeFilter=='all'}}"><a href="#" ng-click="todoList.filterByTag('all')">All</a><div class="tagsactions"></div></li>
+			<li class="active-{{todoList.activeFilter==tags._id}}" ng-repeat="tags in todoList.tags">
+				<a href="#" ng-click="todoList.filterByTag(tags._id)">{{tags.text}}</a>
+				<div class="tagsactions">
+					<button class="btn btn-xs" ng-click="todoList.showInput(tags,'showedit')" ng-hide="tags.showedit" value="tags.text" ><i class="glyphicon glyphicon-pencil"></i> </button>
+					<div ng-show="tags.showedit">
+						<input type="text" ng-keydown="$event.keyCode === 13 && todoList.EditTag(tags)" ng-model="tags.text" /><button class="btn btn-xs" ng-click="todoList.EditTag(tags)">Save</button>
+					</div>
+					<button class="btn btn-xs" ng-click="todoList.showRemoveTag(tags)" ng-hide="tags.showedit"><i class="glyphicon glyphicon-trash"></i> </button>
+				</div>
+			</li>
+		</ul>	
+	</div>
+	
+	<div id="popup" class="alert alert-block alert-error notification fade in" ng-show="todoList.displayDeletePopup">
+		<h6>Are you sure you want to delete this tag?</h6>
+		<div class="form-controls-alert">
+			<a href="" class="btn" ng-click="todoList.showInput(todoList,'displayDeletePopup')">No</a>
+			<a href="" class="btn btn-danger" ng-click="todoList.removeTag(todoList.sTagId)">Yes</a>
+		</div>
+	</div><!-- end alert -->  
+	<div id="cover"  ng-show="todoList.displayDeletePopup"></div>
   </body>
 </html>
