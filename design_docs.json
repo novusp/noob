@@ -1,0 +1,1 @@
+{"_id":"_design/todos","views":{"type":{"map":"function (doc) {\n  emit(doc.type, doc);\n}"},"tags":{"map":"function (doc) {\n  for(var idx in doc.selTags) {\n    emit(doc.selTags[idx], doc._id);\n    if(doc.parent){\n        emit(doc.selTags[idx], doc.parent);\n    }\n  }\n}"},"byIds":{"map":"function (doc) {\n  emit(doc._id, doc);\n}"}},"language":"javascript"}

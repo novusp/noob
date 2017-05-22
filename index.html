@@ -14,7 +14,7 @@
 	
 	<link rel="icon" href="favicon.ico" type="image/x-icon"/>
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
-	<title>Noob Todos</title>
+	<title>Noob Todos </title>
   </head>
   <body ng-controller="TodoListController as todoList">
     <h2 style="margin-left:30px;">Noob Todos</h2>
@@ -26,7 +26,7 @@
 			<span>Hide completed</span>
 		</label>
       
-      <ul ng-init="todoList.initValues(['tag','todoitem'])" class="unstyled">
+      <ul class="unstyled">
         <li ng-repeat="cat in todoList.todos" ng-init="todoList.isCatDone(cat.text)" ng-hide="todoList.hideCompleted && cat.done" >
             <label class="checkbox">
 				<input type="checkbox" ng-model="cat.done" ng-hide="cat.todos.length" ng-change="todoList.addToDB(cat)" >
