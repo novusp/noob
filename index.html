@@ -26,7 +26,7 @@
 			<span>Hide completed</span>
 		</label>
       
-      <ul ng-init="todoList.initValues(['tag','todoitem'])" class="unstyled">
+      <ul class="unstyled">
         <li ng-repeat="cat in todoList.todos" ng-init="todoList.isCatDone(cat.text)" ng-hide="todoList.hideCompleted && cat.done" >
             <label class="checkbox">
 				<input type="checkbox" ng-model="cat.done" ng-hide="cat.todos.length" ng-change="todoList.addToDB(cat)" >
